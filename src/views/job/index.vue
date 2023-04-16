@@ -20,12 +20,19 @@
 				</el-table-column>
 				<el-table-column prop="area" label="参数域" width="180" />
 				<el-table-column prop="create_time" label="创建时间" width="190" />
-				<el-table-column label="操作" width="220" align="center">
+				<el-table-column label="操作" width="500" align="center">
 					<template #default="scope">
-						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">
+						<el-button text :icon="Edit" @click="viewLog(scope.row)" v-permiss="15">
+							查看日志
+						</el-button>
+						<el-button text :icon="CloseBold" v-if="scope.row.enable" type="danger"
+							@click="modifyStatus(scope.row)">停用</el-button>
+						<el-button text :icon="Select" v-else type="success" @click="modifyStatus(scope.row)"> 启用
+						</el-button>
+						<el-button text :icon="Edit" @click="handleEdit(scope.row)" v-permiss="15">
 							编辑
 						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.$index)" v-permiss="16">
+						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.row.id)" v-permiss="16">
 							删除
 						</el-button>
 					</template>
@@ -38,7 +45,7 @@
 		</div>
 
 		<!-- 编辑弹出框 -->
-		<el-dialog :title="editTitle" v-model="editVisible" width="30%" @open="openDialog">
+		<el-dialog :title="editTitle" top="5px" v-model="editVisible" width="30%" @open="openDialog">
 			<el-form label-width="85px">
 				<el-form-item label="任务名称">
 					<el-input v-model="form.name" />
@@ -66,14 +73,18 @@
 				</span>
 			</template>
 		</el-dialog>
+
+		<!-- 日志弹窗 -->
+		<el-dialog title="查看日志" top="5px" v-model="logVisible" width="30%" @open="openLog">
+		</el-dialog>
 	</div>
 </template>
 
 <script setup lang="ts" name="job">
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
-import { apiJobCreate, apiJobList } from '../../api/job';
+import { Delete, Edit, Select, CloseBold, Search, Plus } from '@element-plus/icons-vue';
+import { apiJobCreate, apiListJob, apiDelJob, apiModifyJob, apiModifyStatusJob } from '../../api/job';
 import { apiAreaList } from '../../api/param';
 
 interface TableItem {
@@ -95,6 +106,10 @@ const query = reactive({
 const tableData = ref<TableItem[]>([]);
 const pageTotal = ref(0);
 
+// websocket 对象
+let ws: WebSocket;
+// 日志弹窗
+const logVisible = ref(false);
 // 表格编辑时弹窗和保存
 const editVisible = ref(false);
 // 弹窗名称
@@ -126,7 +141,7 @@ let idx: number = -1;
 
 // 获取表格数据
 const getData = async () => {
-	let { data } = await apiJobList(query)
+	let { data } = await apiListJob(query)
 	if (data.code == 200) {
 		tableData.value = data.data;
 		pageTotal.value = data.pageInfo.total || 50;
@@ -156,6 +171,22 @@ const openDialog = async () => {
 		});
 	}
 }
+
+const openLog = () => {
+	if (ws) {
+		ws.close();
+	}
+	// 创建一个websocket 对象
+	ws = new WebSocket(`ws://${window.location}/socket`);
+	ws.onmessage = (data) => {
+		console.log('后台返回数据', data);
+	}
+}
+
+// 查看日志
+const viewLog = (row: any) => {
+	logVisible.value = true;
+};
 
 // 查询操作
 const handleSearch = () => {
@@ -197,10 +228,26 @@ const handleCreate = () => {
 	editVisible.value = true;
 };
 
+// 修改任务状态
+const modifyStatus = async (row: any) => {
+	let { data } = await apiModifyStatusJob(row.id);
+	if (data.code == 200) {
+		if (row.enable) {
+			ElMessage.success(`停用任务【${row.name}】成功`)
+		} else {
+			ElMessage.success(`启用任务【${row.name}】成功`)
+		}
+	} else {
+		ElMessage.error(`修改任务状态失败 ${data.message}`);
+	}
+
+	getData();
+};
+
 // 修改任务
-const handleEdit = (index: number, row: any) => {
-	idx = index;
+const handleEdit = (row: any) => {
 	setValueForm(row);
+	dialogType.value = 'modify';
 	editVisible.value = true;
 };
 
@@ -216,11 +263,18 @@ const handleDelete = (index: number) => {
 	ElMessageBox.confirm('确定要删除吗？', '提示', {
 		type: 'warning'
 	})
-		.then(() => {
-			ElMessage.success('删除成功');
-			tableData.value.splice(index, 1);
+		.then(async () => {
+			let { data } = await apiDelJob(index)
+			if (data.code == 200) {
+				ElMessage.success('删除成功');
+			}
+			// 查询数据
+			getData();
 		})
-		.catch(() => { });
+		.catch(() => {
+			ElMessage.warning('取消删除');
+			getData();
+		});
 };
 
 
@@ -233,11 +287,18 @@ const saveEdit = async () => {
 		if (dialogType.value == 'add') {
 			let { data } = await apiJobCreate(form);
 			if (data.code == 200) {
-				ElMessage.success(`修改第 ${idx + 1} 行成功`);
+				ElMessage.success(`添加任务【${form.name}】成功`);
+			} else {
+				ElMessage.error(`${data.message}`)
 			}
 		}
 		if (dialogType.value == 'modify') {
-			// 
+			let { data } = await apiModifyJob(form);
+			if (data.code == 200) {
+				ElMessage.success(`修改任务【${form.name}成功】`)
+			} else {
+				ElMessage.error(`${data.message}`)
+			}
 		}
 		editVisible.value = false;
 	} catch (error) {

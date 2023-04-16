@@ -71,7 +71,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
 			};
 			// 调用后台接口
 			let isLogin = await user.login(info)
-			console.log('isLogin', isLogin);
 			// 如果登录成功
 			if (isLogin) {
 				ElMessage.success('登录成功');
