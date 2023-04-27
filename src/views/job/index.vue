@@ -22,17 +22,17 @@
 				<el-table-column prop="create_time" label="创建时间" width="190" />
 				<el-table-column label="操作" width="500" align="center">
 					<template #default="scope">
-						<el-button text :icon="Edit" @click="viewLog(scope.row)" v-permiss="15">
+						<el-button text :icon="Edit" @click="viewLog(scope.row)">
 							查看日志
 						</el-button>
 						<el-button text :icon="CloseBold" v-if="scope.row.enable" type="danger"
 							@click="modifyStatus(scope.row)">停用</el-button>
 						<el-button text :icon="Select" v-else type="success" @click="modifyStatus(scope.row)"> 启用
 						</el-button>
-						<el-button text :icon="Edit" @click="handleEdit(scope.row)" v-permiss="15">
+						<el-button text :icon="Edit" @click="handleEdit(scope.row)">
 							编辑
 						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.row.id)" v-permiss="16">
+						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.row.id)">
 							删除
 						</el-button>
 					</template>

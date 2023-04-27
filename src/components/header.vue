@@ -20,7 +20,7 @@
 					<span class="btn-bell-badge" v-if="message"></span>
 				</div>
 				<!-- 用户头像 -->
-				<el-avatar class="user-avator" :size="30" :src="imgurl" />
+				<el-avatar class="user-avator" :size="25" :src="imgurl" />
 				<!-- 用户名下拉菜单 -->
 				<el-dropdown class="user-name" trigger="click" @command="handleCommand">
 					<span class="el-dropdown-link">
@@ -80,9 +80,10 @@ const handleCommand = (command: string) => {
 	position: relative;
 	box-sizing: border-box;
 	width: 100%;
-	height: 70px;
+	height: 40px;
 	font-size: 22px;
 	color: #fff;
+	background-color: #4169E1;
 }
 .collapse-btn {
 	display: flex;
@@ -96,7 +97,7 @@ const handleCommand = (command: string) => {
 .header .logo {
 	float: left;
 	width: 250px;
-	line-height: 70px;
+	line-height: 40px;
 }
 .header-right {
 	float: right;
@@ -104,7 +105,7 @@ const handleCommand = (command: string) => {
 }
 .header-user-con {
 	display: flex;
-	height: 70px;
+	height: 40px;
 	align-items: center;
 }
 .btn-fullscreen {
@@ -115,8 +116,8 @@ const handleCommand = (command: string) => {
 .btn-bell,
 .btn-fullscreen {
 	position: relative;
-	width: 30px;
-	height: 30px;
+	width: 25px;
+	height: 25px;
 	text-align: center;
 	border-radius: 15px;
 	cursor: pointer;
@@ -130,7 +131,7 @@ const handleCommand = (command: string) => {
 	width: 8px;
 	height: 8px;
 	border-radius: 4px;
-	background: #f56c6c;
+	background: #6988E7;
 	color: #fff;
 }
 .btn-bell .el-icon-lx-notice {
