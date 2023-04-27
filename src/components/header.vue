@@ -2,19 +2,19 @@
 	<div class="header">
 		<!-- 折叠按钮 -->
 		<div class="collapse-btn" @click="collapseChage">
-			<el-icon v-if="sidebar.collapse"><Expand /></el-icon>
-			<el-icon v-else><Fold /></el-icon>
+			<el-icon v-if="sidebar.collapse">
+				<Expand />
+			</el-icon>
+			<el-icon v-else>
+				<Fold />
+			</el-icon>
 		</div>
 		<div class="logo">后台管理系统</div>
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->
 				<div class="btn-bell" @click="router.push('/tabs')">
-					<el-tooltip
-						effect="dark"
-						:content="message ? `有${message}条未读消息` : `消息中心`"
-						placement="bottom"
-					>
+					<el-tooltip effect="dark" :content="message ? `有${message}条未读消息` : `消息中心`" placement="bottom">
 						<i class="el-icon-lx-notice"></i>
 					</el-tooltip>
 					<span class="btn-bell-badge" v-if="message"></span>
@@ -31,9 +31,6 @@
 					</span>
 					<template #dropdown>
 						<el-dropdown-menu>
-							<a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
-								<el-dropdown-item>项目仓库</el-dropdown-item>
-							</a>
 							<el-dropdown-item command="user">个人中心</el-dropdown-item>
 							<el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
 						</el-dropdown-menu>
@@ -83,8 +80,9 @@ const handleCommand = (command: string) => {
 	height: 40px;
 	font-size: 22px;
 	color: #fff;
-	background-color: #4169E1;
+	background-color: #1781b5;
 }
+
 .collapse-btn {
 	display: flex;
 	justify-content: center;
@@ -94,25 +92,30 @@ const handleCommand = (command: string) => {
 	padding: 0 21px;
 	cursor: pointer;
 }
+
 .header .logo {
 	float: left;
 	width: 250px;
 	line-height: 40px;
 }
+
 .header-right {
 	float: right;
 	padding-right: 50px;
 }
+
 .header-user-con {
 	display: flex;
 	height: 40px;
 	align-items: center;
 }
+
 .btn-fullscreen {
 	transform: rotate(45deg);
 	margin-right: 5px;
 	font-size: 24px;
 }
+
 .btn-bell,
 .btn-fullscreen {
 	position: relative;
@@ -124,6 +127,7 @@ const handleCommand = (command: string) => {
 	display: flex;
 	align-items: center;
 }
+
 .btn-bell-badge {
 	position: absolute;
 	right: 4px;
@@ -131,24 +135,29 @@ const handleCommand = (command: string) => {
 	width: 8px;
 	height: 8px;
 	border-radius: 4px;
-	background: #6988E7;
+	background: #ed5a65;
 	color: #fff;
 }
+
 .btn-bell .el-icon-lx-notice {
 	color: #fff;
 }
+
 .user-name {
 	margin-left: 10px;
 }
+
 .user-avator {
 	margin-left: 20px;
 }
+
 .el-dropdown-link {
 	color: #fff;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 }
+
 .el-dropdown-menu__item {
 	text-align: center;
 }

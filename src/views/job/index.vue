@@ -20,21 +20,16 @@
 				</el-table-column>
 				<el-table-column prop="area" label="参数域" width="180" />
 				<el-table-column prop="create_time" label="创建时间" width="190" />
-				<el-table-column label="操作" width="500" align="center">
+				<el-table-column label="操作" width="380" align="center">
 					<template #default="scope">
-						<el-button text :icon="Edit" @click="viewLog(scope.row)">
+						<el-button size="mini" :icon="Monitor" class="view-log" type="primary" @click="viewLog(scope.row)">
 							查看日志
 						</el-button>
-						<el-button text :icon="CloseBold" v-if="scope.row.enable" type="danger"
-							@click="modifyStatus(scope.row)">停用</el-button>
-						<el-button text :icon="Select" v-else type="success" @click="modifyStatus(scope.row)"> 启用
-						</el-button>
-						<el-button text :icon="Edit" @click="handleEdit(scope.row)">
-							编辑
-						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.row.id)">
-							删除
-						</el-button>
+						<el-button size="mini" :icon="Close" v-if="scope.row.enable" type="danger"
+							@click="modifyStatus(scope.row)" />
+						<el-button size="mini" :icon="Check" v-else type="success" @click="modifyStatus(scope.row)" />
+						<el-button size="mini" type="primary" :icon="Edit" @click="handleEdit(scope.row)" />
+						<el-button size="mini" type="danger" :icon="Delete" @click="handleDelete(scope.row.id)" />
 					</template>
 				</el-table-column>
 			</el-table>
@@ -45,7 +40,7 @@
 		</div>
 
 		<!-- 编辑弹出框 -->
-		<el-dialog :title="editTitle" top="5px" v-model="editVisible" width="30%" @open="openDialog">
+		<el-dialog :title="editTitle" top="5px" v-model="editVisible" width="35%" @open="openDialog">
 			<el-form label-width="85px">
 				<el-form-item label="任务名称">
 					<el-input v-model="form.name" />
@@ -83,7 +78,7 @@
 <script setup lang="ts" name="job">
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Delete, Edit, Select, CloseBold, Search, Plus } from '@element-plus/icons-vue';
+import { Delete, Edit, Close, Search, Monitor, Plus, Check } from '@element-plus/icons-vue';
 import { apiJobCreate, apiListJob, apiDelJob, apiModifyJob, apiModifyStatusJob } from '../../api/job';
 import { apiAreaList } from '../../api/param';
 
@@ -246,6 +241,7 @@ const modifyStatus = async (row: any) => {
 
 // 修改任务
 const handleEdit = (row: any) => {
+	editTitle.value = '编辑任务';
 	setValueForm(row);
 	dialogType.value = 'modify';
 	editVisible.value = true;
@@ -314,6 +310,10 @@ const saveEdit = async () => {
 <style scoped>
 .handle-box {
 	margin-bottom: 20px;
+}
+
+.view-log {
+	margin-right: 5px;
 }
 
 .handle-select {
