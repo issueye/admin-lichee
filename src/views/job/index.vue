@@ -7,12 +7,12 @@
 				<el-button type="primary" :icon="Plus" @click="handleCreate">新增</el-button>
 			</div>
 			<el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-				<el-table-column prop="id" label="ID" width="150" align="center" />
+				<el-table-column prop="id" label="ID" width="145" align="center" />
 				<el-table-column prop="name" label="任务名称" width="180" />
 				<el-table-column prop="expr" label="时间表达式" width="150" />
 				<el-table-column prop="mark" label="备注" />
 				<el-table-column prop="path" label="脚本路径" />
-				<el-table-column label="状态" align="center" width="100">
+				<el-table-column label="状态" align="center" width="80">
 					<template #default="scope">
 						<el-tag v-if="scope.row.enable" type="success">启用</el-tag>
 						<el-tag v-else type="danger">停用</el-tag>
@@ -100,6 +100,8 @@ const query = reactive({
 });
 const tableData = ref<TableItem[]>([]);
 const pageTotal = ref(0);
+
+const tipLog = "查看任务运行日志";
 
 // websocket 对象
 let ws: WebSocket;
@@ -334,7 +336,7 @@ const saveEdit = async () => {
 }
 
 .mr10 {
-	margin-right: 10px;
+	margin-right: 5px;
 }
 
 .table-td-thumb {

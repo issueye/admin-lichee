@@ -16,7 +16,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'dashboard',
                 meta: {
                     title: '系统首页',
-                    permiss: '1',
                 },
                 component: () => import(/* webpackChunkName: "dashboard" */ '../views/dashboard.vue'),
             },
@@ -25,7 +24,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'job',
                 meta: {
                     title: '定时任务',
-                    permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/job/index.vue'),
             },
@@ -34,7 +32,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'basecharts',
                 meta: {
                     title: '图表',
-                    permiss: '11',
                 },
                 component: () => import(/* webpackChunkName: "charts" */ '../views/charts.vue'),
             },
@@ -43,7 +40,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'baseform',
                 meta: {
                     title: '表单',
-                    permiss: '5',
                 },
                 component: () => import(/* webpackChunkName: "form" */ '../views/form.vue'),
             },
@@ -52,7 +48,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'tabs',
                 meta: {
                     title: 'tab标签',
-                    permiss: '4',
                 },
                 component: () => import(/* webpackChunkName: "tabs" */ '../views/tabs.vue'),
             },
@@ -61,7 +56,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'upload',
                 meta: {
                     title: '上传插件',
-                    permiss: '6',
                 },
                 component: () => import(/* webpackChunkName: "upload" */ '../views/upload.vue'),
             },
@@ -70,7 +64,6 @@ const routes: RouteRecordRaw[] = [
                 name: 'icon',
                 meta: {
                     title: '自定义图标',
-                    permiss: '10',
                 },
                 component: () => import(/* webpackChunkName: "icon" */ '../views/icon.vue'),
             },
@@ -107,7 +100,7 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: any, from: any, next: any) => {
     document.title = `${to.meta.title} | vue-manage-system`;
     const role = localStorage.getItem('ms_username');
     if (!role && to.path !== '/login') {

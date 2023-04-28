@@ -99,7 +99,11 @@ a {
 
 
 .el-button+.el-tooltip {
-    margin-left: 10px;
+    margin-left: 5px;
+}
+
+.el-button+.el-button {
+    margin-left: 5px;
 }
 
 .el-table tr:hover {
