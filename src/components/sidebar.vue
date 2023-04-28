@@ -59,6 +59,11 @@ const items = [
         title: '任务管理',
     },
     {
+        icon: 'DocumentCopy',
+        index: '/codeEdit',
+        title: '脚本管理',
+    },
+    {
         icon: 'Edit',
         index: '3',
         title: '表单相关',

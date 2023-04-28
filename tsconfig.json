@@ -6,6 +6,7 @@
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
+    "allowJs": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -13,6 +14,12 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts","src/**/*.vue"],
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.d.ts",
+    "src/**/*.vue",
+    "src/components/no-vue3-cron/index.js",
+    "src/components/no-vue3-cron/no-vue3-cron/language/*.js",
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

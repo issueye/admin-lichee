@@ -28,6 +28,14 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/job/index.vue'),
             },
             {
+                path: '/codeEdit',
+                name: 'codeEdit',
+                meta: {
+                    title: '脚本管理',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/codeEdit/index.vue'),
+            },
+            {
                 path: '/charts',
                 name: 'basecharts',
                 meta: {

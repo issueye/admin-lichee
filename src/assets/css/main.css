@@ -189,11 +189,20 @@ a {
     min-width: 22px !important;
 }
 
-/* 弹窗头部 */
+/* 弹窗 */
+.el-dialog {
+    border-radius: 5px!important;
+}
+
 .el-dialog .el-dialog__header {
     margin-right: 0px !important;
     background-color: #1781b5;
-    padding: 15px 30px 10px 15px;
+    padding: 5px 20px 5px 15px;
+    border-radius: 5px 5px 0px 0px!important;
+}
+
+.el-dialog__title{
+    font-size: 16px !important;
 }
 
 .el-dialog .el-dialog__title {
@@ -202,6 +211,8 @@ a {
 
 .el-dialog__headerbtn {
     top: 0px !important;
+    height: 35px!important;
+    width: 35px!important;
 }
 
 .el-dialog .el-dialog__headerbtn {
@@ -210,19 +221,11 @@ a {
 
 .el-dialog .el-dialog__headerbtn .el-dialog__close {
     color: #fff;
-    height: 30px;
-    width: 35px;
 }
 
 .el-dialog .el-dialog__headerbtn .el-dialog__close:hover {
     color: gray;
 }
-
-/* .el-dialog__header {
-    margin-right: 0px !important;
-    background-color: #4169E1;
-    height: 15px;
-} */
 
 .form-box .line {
     text-align: center;
