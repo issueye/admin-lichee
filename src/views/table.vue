@@ -18,22 +18,15 @@
 				</el-table-column>
 				<el-table-column label="头像(查看大图)" align="center">
 					<template #default="scope">
-						<el-image
-							class="table-td-thumb"
-							:src="scope.row.thumb"
-							:z-index="10"
-							:preview-src-list="[scope.row.thumb]"
-							preview-teleported
-						>
+						<el-image class="table-td-thumb" :src="scope.row.thumb" :z-index="10"
+							:preview-src-list="[scope.row.thumb]" preview-teleported>
 						</el-image>
 					</template>
 				</el-table-column>
 				<el-table-column prop="address" label="地址"></el-table-column>
 				<el-table-column label="状态" align="center">
 					<template #default="scope">
-						<el-tag
-							:type="scope.row.state === '成功' ? 'success' : scope.row.state === '失败' ? 'danger' : ''"
-						>
+						<el-tag :type="scope.row.state === '成功' ? 'success' : scope.row.state === '失败' ? 'danger' : ''">
 							{{ scope.row.state }}
 						</el-tag>
 					</template>
@@ -42,24 +35,18 @@
 				<el-table-column prop="date" label="注册时间"></el-table-column>
 				<el-table-column label="操作" width="220" align="center">
 					<template #default="scope">
-						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">
+						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)">
 							编辑
 						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.$index)" v-permiss="16">
+						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.$index)">
 							删除
 						</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 			<div class="pagination">
-				<el-pagination
-					background
-					layout="total, prev, pager, next"
-					:current-page="query.pageIndex"
-					:page-size="query.pageSize"
-					:total="pageTotal"
-					@current-change="handlePageChange"
-				></el-pagination>
+				<el-pagination background layout="total, prev, pager, next" :current-page="query.pageIndex"
+					:page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
 			</div>
 		</div>
 
@@ -136,7 +123,7 @@ const handleDelete = (index: number) => {
 			ElMessage.success('删除成功');
 			tableData.value.splice(index, 1);
 		})
-		.catch(() => {});
+		.catch(() => { });
 };
 
 // 表格编辑时弹窗和保存
@@ -172,16 +159,20 @@ const saveEdit = () => {
 .handle-input {
 	width: 300px;
 }
+
 .table {
 	width: 100%;
 	font-size: 14px;
 }
+
 .red {
 	color: #F56C6C;
 }
+
 .mr10 {
 	margin-right: 10px;
 }
+
 .table-td-thumb {
 	display: block;
 	margin: auto;

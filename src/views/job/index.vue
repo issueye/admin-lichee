@@ -7,34 +7,29 @@
 				<el-button type="primary" :icon="Plus" @click="handleCreate">新增</el-button>
 			</div>
 			<el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-				<el-table-column prop="id" label="ID" width="150" align="center" />
+				<el-table-column prop="id" label="ID" width="145" align="center" />
 				<el-table-column prop="name" label="任务名称" width="180" />
 				<el-table-column prop="expr" label="时间表达式" width="150" />
 				<el-table-column prop="mark" label="备注" />
-				<el-table-column prop="path" label="脚本路径" />
-				<el-table-column label="状态" align="center" width="100">
+				<el-table-column prop="path" label="脚本路径" min-width="150" />
+				<el-table-column label="状态" align="center" width="80">
 					<template #default="scope">
 						<el-tag v-if="scope.row.enable" type="success">启用</el-tag>
 						<el-tag v-else type="danger">停用</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column prop="area" label="参数域" width="180" />
+				<el-table-column prop="area" label="参数域" width="120" />
 				<el-table-column prop="create_time" label="创建时间" width="190" />
-				<el-table-column label="操作" width="500" align="center">
+				<el-table-column label="操作" width="380" align="center" fixed="right">
 					<template #default="scope">
-						<el-button text :icon="Edit" @click="viewLog(scope.row)" v-permiss="15">
+						<el-button size="mini" :icon="Monitor" class="view-log" type="primary" @click="viewLog(scope.row)">
 							查看日志
 						</el-button>
-						<el-button text :icon="CloseBold" v-if="scope.row.enable" type="danger"
-							@click="modifyStatus(scope.row)">停用</el-button>
-						<el-button text :icon="Select" v-else type="success" @click="modifyStatus(scope.row)"> 启用
-						</el-button>
-						<el-button text :icon="Edit" @click="handleEdit(scope.row)" v-permiss="15">
-							编辑
-						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.row.id)" v-permiss="16">
-							删除
-						</el-button>
+						<el-button size="mini" :icon="Close" v-if="scope.row.enable" type="danger"
+							@click="modifyStatus(scope.row)" />
+						<el-button size="mini" :icon="Check" v-else type="success" @click="modifyStatus(scope.row)" />
+						<el-button size="mini" type="primary" :icon="Edit" @click="handleEdit(scope.row)" />
+						<el-button size="mini" type="danger" :icon="Delete" @click="handleDelete(scope.row.id)" />
 					</template>
 				</el-table-column>
 			</el-table>
@@ -45,13 +40,25 @@
 		</div>
 
 		<!-- 编辑弹出框 -->
-		<el-dialog :title="editTitle" top="5px" v-model="editVisible" width="30%" @open="openDialog">
+		<el-dialog :title="editTitle" top="5px" v-model="editVisible" width="35%" @open="openDialog">
 			<el-form label-width="85px">
 				<el-form-item label="任务名称">
 					<el-input v-model="form.name" />
 				</el-form-item>
 				<el-form-item label="时间表达式">
-					<el-input v-model="form.expr" />
+					<el-input v-model="form.expr" >
+						<template #append>
+								<el-popover placement="bottom-end" title="时间表达式" :width="550" :visible="cronVisible">
+								<noVue3Cron
+									:cron-value="form.expr"
+									@change="changeCron"
+									@close="cronVisible=false"
+									max-height="400px"
+									i18n="cn" />
+									<template #reference><el-button class="m-2" @click="cronVisible = !cronVisible">设置</el-button></template>
+								</el-popover>
+						</template>
+					</el-input>
 				</el-form-item>
 				<el-form-item label="脚本路径">
 					<el-input v-model="form.path" />
@@ -75,7 +82,8 @@
 		</el-dialog>
 
 		<!-- 日志弹窗 -->
-		<el-dialog title="查看日志" top="5px" v-model="logVisible" width="30%" @open="openLog">
+		<el-dialog title="查看日志" top="5px" v-model="logVisible" width="40%"  @close="closeLog">
+			<Codemirror v-model:value="code" :options="cmOptions" border :height="400" />
 		</el-dialog>
 	</div>
 </template>
@@ -83,9 +91,10 @@
 <script setup lang="ts" name="job">
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Delete, Edit, Select, CloseBold, Search, Plus } from '@element-plus/icons-vue';
+import { Delete, Edit, Close, Search, Monitor, Plus, Check } from '@element-plus/icons-vue';
 import { apiJobCreate, apiListJob, apiDelJob, apiModifyJob, apiModifyStatusJob } from '../../api/job';
 import { apiAreaList } from '../../api/param';
+import Codemirror, { createLog, createTitle } from "codemirror-editor-vue3"
 
 interface TableItem {
 	id: number;
@@ -106,6 +115,8 @@ const query = reactive({
 const tableData = ref<TableItem[]>([]);
 const pageTotal = ref(0);
 
+const tipLog = "查看任务运行日志";
+
 // websocket 对象
 let ws: WebSocket;
 // 日志弹窗
@@ -123,6 +134,21 @@ interface AreaItem {
 	id: number;
 	name: string;
 }
+// cron 选择器
+const cronVisible = ref(false);
+const state = reactive({
+	cronPopover: false,
+	cron: ''
+})
+
+// 日志控件配置
+const cmOptions = {
+	mode: "fclog",
+	theme: "default"
+}
+
+const code = ref(`${createTitle('脚本运行日志')}`)
+
 const areaOpt = ref<AreaItem[]>([]);
 
 let form = reactive({
@@ -149,8 +175,13 @@ const getData = async () => {
 };
 getData();
 
+const changeCron = (val: string) => {
+	if(typeof(val) !== 'string') return false
+	form.expr = val
+}
+
 // 在打开弹窗时，调用参数域接口
-const openDialog = async () => {
+const openDialog = async (row:any) => {
 	// 清空数据
 	areaOpt.value.length = 0;
 
@@ -172,20 +203,35 @@ const openDialog = async () => {
 	}
 }
 
-const openLog = () => {
+const closeLog = () => {
+	logVisible.value = false;
 	if (ws) {
 		ws.close();
-	}
-	// 创建一个websocket 对象
-	ws = new WebSocket(`ws://${window.location}/socket`);
-	ws.onmessage = (data) => {
-		console.log('后台返回数据', data);
 	}
 }
 
 // 查看日志
 const viewLog = (row: any) => {
 	logVisible.value = true;
+	code.value = `${createTitle('脚本运行日志')}`;
+
+	if (ws) {
+		ws.close();
+	}
+	// 创建一个websocket 对象
+	let url = `ws://${location.host}/socket?name=${row.name}`
+	try {
+		ws = new WebSocket(url);
+		ws.onmessage = (data) => {
+			console.log('后台返回数据', data); 
+			let logData = JSON.parse(data.data);
+			code.value += '\n' + `${createLog(logData.msg, logData.level.toLowerCase())}`; 
+		}
+	} catch (error) {
+		console.error('ws 连接失败', error);
+		
+	}	
+	
 };
 
 // 查询操作
@@ -200,7 +246,7 @@ const clearForm = () => {
 	form.id = ''
 	form.name = ''
 	form.mark = ''
-	form.expr = ''
+	form.expr = "* * * * * ?"
 	form.enable = false
 	form.path = ''
 	form.area = ''
@@ -246,6 +292,7 @@ const modifyStatus = async (row: any) => {
 
 // 修改任务
 const handleEdit = (row: any) => {
+	editTitle.value = '编辑任务';
 	setValueForm(row);
 	dialogType.value = 'modify';
 	editVisible.value = true;
@@ -316,6 +363,16 @@ const saveEdit = async () => {
 	margin-bottom: 20px;
 }
 
+.cron{
+	width: 700px;
+	margin: 0 auto;
+	margin-top: 100px;
+}
+
+.view-log {
+	margin-right: 5px;
+}
+
 .handle-select {
 	width: 120px;
 }
@@ -334,7 +391,7 @@ const saveEdit = async () => {
 }
 
 .mr10 {
-	margin-right: 10px;
+	margin-right: 5px;
 }
 
 .table-td-thumb {
