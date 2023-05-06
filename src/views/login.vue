@@ -105,8 +105,8 @@ tags.clearTags();
 	line-height: 50px;
 	text-align: center;
 	font-size: 20px;
-	color: #fff;
-	border-bottom: 1px solid #ddd;
+	color: #207f4c;
+	border-bottom: 2px solid #ddd;
 }
 
 .ms-login {
